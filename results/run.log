@@ -1,0 +1,27 @@
+26 runs to do (1 already in the ledger)
+nussinov-single-r1           hidden 50/50  calls 1     29s  
+kabsch-swarm_nocritic-r1     hidden 40/40  calls 4     79s  
+alignment-single-r1          hidden 60/60  calls 2     99s  
+kabsch-single-r1             hidden 40/40  calls 2    104s  
+alignment-swarm_nocritic-r1  hidden 60/60  calls 4    136s  
+alignment-single-r2          hidden 60/60  calls 1     43s  
+nussinov-swarm_nocritic-r1   hidden 50/50  calls 4     95s  
+kabsch-single-r2             hidden 40/40  calls 1     57s  
+nussinov-swarm-r1            hidden 50/50  calls 5    218s  
+alignment-swarm-r1           hidden 60/60  calls 5    203s  
+kabsch-swarm_nocritic-r2     hidden 40/40  calls 4    138s  
+alignment-swarm_nocritic-r2  hidden 60/60  calls 4    216s  
+nussinov-single-r2           hidden 50/50  calls 1    110s  
+nussinov-swarm_nocritic-r2   hidden 50/50  calls 4     72s  
+alignment-swarm-r2           hidden 60/60  calls 5    279s  
+alignment-single-r3          hidden 60/60  calls 2     98s  
+nussinov-swarm-r2            hidden 50/50  calls 5    209s  
+kabsch-swarm-r2              hidden 40/40  calls 5    343s  
+kabsch-single-r3             hidden 40/40  calls 2    142s  
+kabsch-swarm_nocritic-r3     hidden 40/40  calls 4    128s  
+alignment-swarm-r3           hidden 60/60  calls 5    248s  
+alignment-swarm_nocritic-r3  hidden 60/60  calls 4    185s  
+nussinov-swarm_nocritic-r3   hidden 50/50  calls 4     77s  
+nussinov-single-r3           hidden 50/50  calls 2   7670s  
+nussinov-swarm-r3            hidden 50/50  calls 5   7685s  
+kabsch-swarm-r3              hidden 40/40  calls 6   8022s  
