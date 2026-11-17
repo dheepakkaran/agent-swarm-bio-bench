@@ -5,6 +5,10 @@ And does the swarm's **critic** matter? A pre-registered, small, controlled expe
 computational biology methods, each specified from its original paper's math and scored on hidden tests
 against established implementations (Biopython).
 
+**Project page + 90 s overview film:** https://dheepakkaran.github.io/agent-swarm-bio-bench/#overview
+
+[![Overview film (silent preview, 4x speed)](docs/media/keynote.webp)](https://dheepakkaran.github.io/agent-swarm-bio-bench/#overview)
+
 ## Result (27 runs, Claude Haiku 5.5, `RESULTS.md`)
 
 | Arm | Runs fully correct on hidden tests | Mean model calls | Mean tokens | Median wall time |

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Swarm Bio Bench</title>
+<meta name="description" content="A pre-registered experiment: does a small team of AI agents write more correct scientific code than one agent, at the same cap of model calls? 27 runs on three classic computational biology methods.">
+<style>
+@font-face{font-family:Inter;src:url(fonts/InterVariable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+:root{
+  --bg:#000;--panel:#0d0d10;--panel2:#16161b;--line:#24242b;--text:#f2f2f5;--muted:#9a9aa6;--faint:#6b6b76;
+  --a1:#7aa2ff;--a2:#b48cff;--bad:#ff7a85;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#fafafb;--panel:#fff;--panel2:#f1f1f4;--line:#e3e3e8;--text:#111114;--muted:#5b5b66;--faint:#8a8a94;
+  --a1:#3d6bff;--a2:#8a4dff;--bad:#d63a4a;
+}}
+:root[data-theme="dark"]{--bg:#000;--panel:#0d0d10;--panel2:#16161b;--line:#24242b;--text:#f2f2f5;--muted:#9a9aa6;--faint:#6b6b76;--a1:#7aa2ff;--a2:#b48cff;--bad:#ff7a85}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--a1);text-decoration:none}a:hover{text-decoration:underline}
+code{font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--panel2);padding:1px 6px;border-radius:5px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:20px;align-items:center;height:52px;overflow-x:auto;white-space:nowrap}
+nav b{font-weight:650;margin-right:auto}
+nav a{color:var(--muted);font-size:14px}
+.g{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+header{padding:72px 0 8px;text-align:center}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(36px,7vw,64px);line-height:1.05;letter-spacing:-.035em;margin:12px 0 18px;font-weight:720}
+.lede{max-width:660px;margin:0 auto;color:var(--muted);font-size:18px}
+.links{margin:26px 0 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 16px;border:1px solid var(--line);border-radius:999px;color:var(--text);font-size:14px;background:var(--panel)}
+.btn:hover{text-decoration:none;border-color:var(--a1)}
+section{padding:64px 0 0}
+h2{font-size:clamp(26px,4vw,34px);letter-spacing:-.025em;margin:0 0 10px;font-weight:700}
+.sub{color:var(--muted);margin:0 0 26px;max-width:720px}
+.overview{margin:44px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.overview video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
+.overview figcaption{padding:12px 18px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel)}
+.kpi .v{font-size:32px;font-weight:720;letter-spacing:-.03em}
+.kpi .l{color:var(--muted);font-size:13.5px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--panel)}
+.card .n{font-size:12px;color:var(--faint)}
+.card h3{margin:4px 0 6px;font-size:19px;letter-spacing:-.015em}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0;font-size:13.5px}
+.flow span{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:4px 10px}
+.flow i{color:var(--faint);font-style:normal}
+.bars{display:grid;gap:12px}
+.bar{display:grid;grid-template-columns:150px 1fr 90px;align-items:center;gap:12px;font-size:14.5px}
+.bar .t{height:22px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.bar .f{height:100%;background:var(--faint);border-radius:6px}
+.bar .f.hi{background:linear-gradient(90deg,var(--a1),var(--a2))}
+.bar .num{font-variant-numeric:tabular-nums;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:620px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{color:var(--muted);font-weight:550;font-size:13px}
+tr:last-child td{border-bottom:0}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);white-space:nowrap}
+.hyp{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.hyp div{display:flex;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.hyp div:last-child{border-bottom:0}
+.hyp .k{color:var(--faint);font-size:13px;width:24px}
+.hyp .q{flex:1}
+ol.learn{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+ol.learn li{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--panel)}
+ol.learn b{display:block;margin-bottom:2px}
+ol.learn span{color:var(--muted);font-size:14.5px}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0}
+.big{font-size:clamp(24px,4vw,34px);font-weight:700;letter-spacing:-.025em;line-height:1.2;text-align:center;margin:0}
+footer{margin:80px 0 0;padding:28px 0 44px;border-top:1px solid var(--line);color:var(--faint);font-size:13.5px}
+@media (max-width:760px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:1fr}
+  .bar{grid-template-columns:96px 1fr 64px;font-size:13px}
+  header{padding-top:48px}
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><b>agent-swarm-bio-bench</b><a href="#overview">Video</a><a href="#setup">Setup</a><a href="#results">Results</a><a href="#learned">Learned</a><a href="#run">Run it</a></div></nav>
+<main class="wrap">
+<header>
+  <div class="eyebrow">A pre-registered experiment</div>
+  <h1>One agent, <span class="g">or a team?</span></h1>
+  <p class="lede">Does a small team of AI agents write more correct scientific code than one agent alone, with the same model and the same cap of model calls? Tested on three classic computational biology methods, scored on hidden tests.</p>
+  <div class="links">
+    <a class="btn" href="https://github.com/dheepakkaran/agent-swarm-bio-bench">Code on GitHub</a>
+    <a class="btn" href="https://github.com/dheepakkaran/agent-swarm-bio-bench/blob/main/RESULTS.md">RESULTS.md</a>
+    <a class="btn" href="https://github.com/dheepakkaran/agent-swarm-bio-bench/blob/main/docs/00-scope.md">Pre-registration</a>
+  </div>
+  <figure class="overview" id="overview">
+    <video controls playsinline preload="metadata" poster="media/keynote.jpg" aria-label="90-second overview film">
+      <source src="media/keynote.mp4" type="video/mp4">
+    </video>
+    <figcaption>90-second overview film, sound on. Every number on screen is read from <code>results/summary.json</code>.</figcaption>
+  </figure>
+</header>
+
+<section>
+  <div class="kpis">
+    <div class="kpi"><div class="v">27 / 27</div><div class="l">runs fully correct on hidden tests, every arm</div></div>
+    <div class="kpi"><div class="v g">6.0×</div><div class="l">tokens used by the team vs one agent</div></div>
+    <div class="kpi"><div class="v">2 / 2</div><div class="l">critic fix requests that were false alarms</div></div>
+    <div class="kpi"><div class="v">$0.52</div><div class="l">for all 98 model calls, at list price</div></div>
+  </div>
+</section>
+
+<section id="setup">
+  <h2>Three arms, one budget</h2>
+  <p class="sub">Same model (Claude Haiku 5.5, headless, no tools) and at most 6 model calls per run for every arm. Agents only write code; a harness runs every line.</p>
+  <div class="cards">
+    <div class="card"><div class="n">Arm 1</div><h3>One agent</h3><p>Writes the solution and its own test, then fixes what failed, up to 5 times.</p>
+      <div class="flow"><span>write</span><i>→</i><span>self-test</span><i>→</i><span>fix</span></div></div>
+    <div class="card"><div class="n">Arm 2</div><h3>Team + critic</h3><p>A planner splits the work into 3 approaches, 3 implementers write in parallel, a critic writes its own checker, the best answer gets one fix.</p>
+      <div class="flow"><span>plan</span><i>→</i><span>3 × write</span><i>→</i><span>critic</span><i>→</i><span>fix</span></div></div>
+    <div class="card"><div class="n">Arm 3 · ablation</div><h3>Team, no critic</h3><p>Same planner and 3 implementers; each one's own self-test picks the best, up to 2 fixes.</p>
+      <div class="flow"><span>plan</span><i>→</i><span>3 × write</span><i>→</i><span>fix</span></div></div>
+  </div>
+
+  <h2 style="margin-top:48px">Three classic methods</h2>
+  <p class="sub">Each spec is written from the original paper's math with 3 public examples. Hidden tests are scored against Biopython or a cross-checked reference, and no agent ever sees them.</p>
+  <div class="cards">
+    <div class="card"><div class="n">01 · 60 hidden tests</div><h3>Line up two DNA sequences</h3><p>Local alignment with affine gaps. Smith &amp; Waterman 1981, Gotoh 1982. Reference: Biopython <code>PairwiseAligner</code>.</p></div>
+    <div class="card"><div class="n">02 · 40 hidden tests</div><h3>Overlay two 3-D shapes</h3><p>Optimal superposition RMSD. Kabsch 1976. Reference: Biopython <code>SVDSuperimposer</code>, mirror cases included.</p></div>
+    <div class="card"><div class="n">03 · 50 hidden tests</div><h3>Fold an RNA strand</h3><p>Base-pair maximization. Nussinov et al. 1978. Reference: own DP, cross-checked by brute-force backtracking.</p></div>
+  </div>
+</section>
+
+<section id="results">
+  <h2>Results</h2>
+  <p class="sub">3 tasks × 3 runs per arm. Every arm ended with a fully correct answer in every run, so the difference is cost.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Arm</th><th>Fully correct</th><th>First draft correct</th><th>Mean calls</th><th>Mean tokens</th><th>Median time</th><th>Fixes on already-correct code</th></tr></thead>
+    <tbody>
+      <tr><td>One agent</td><td>9 / 9</td><td>7 / 9</td><td>1.56</td><td>12,634</td><td>99 s</td><td>3 / 5</td></tr>
+      <tr><td>Team + critic</td><td>9 / 9</td><td>9 / 9</td><td>5.22</td><td>75,752</td><td>279 s</td><td>2 / 2</td></tr>
+      <tr><td>Team, no critic</td><td>9 / 9</td><td>9 / 9</td><td>4.00</td><td>39,793</td><td>128 s</td><td>0 / 0</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 style="margin-top:48px;font-size:24px">Tokens per run</h2>
+  <p class="sub">Mean over 9 runs per arm.</p>
+  <div class="bars" role="img" aria-label="Mean tokens per run: one agent 12,634; team without critic 39,793; team with critic 75,752">
+    <div class="bar"><span>One agent</span><div class="t"><div class="f" style="width:16.7%"></div></div><span class="num">12,634</span></div>
+    <div class="bar"><span>Team, no critic</span><div class="t"><div class="f" style="width:52.5%"></div></div><span class="num">39,793</span></div>
+    <div class="bar"><span>Team + critic</span><div class="t"><div class="f hi" style="width:100%"></div></div><span class="num">75,752</span></div>
+  </div>
+
+  <h2 style="margin-top:48px;font-size:24px">Written down before the first run</h2>
+  <p class="sub">Commit <a href="https://github.com/dheepakkaran/agent-swarm-bio-bench/commit/0455005"><code>0455005</code></a> fixed the question, arms, metrics and hypotheses before any agent ran.</p>
+  <div class="hyp">
+    <div><span class="k">H1</span><span class="q">The team passes all hidden tests in more runs than one agent</span><span class="pill">not supported</span></div>
+    <div><span class="k">H2</span><span class="q">The critic is what helps (team beats team without critic)</span><span class="pill">not supported</span></div>
+  </div>
+  <p class="sub" style="margin-top:12px">Not disproved either: every arm hit the ceiling, so the arms cannot be separated at this difficulty.</p>
+</section>
+
+<section id="learned">
+  <h2>What went wrong, and what it shows</h2>
+  <p class="sub">All logged as they happened in <a href="https://github.com/dheepakkaran/agent-swarm-bio-bench/blob/main/FAILURES.md">FAILURES.md</a>.</p>
+  <ol class="learn">
+    <li><b>Real bugs only on affine gaps.</b><span>2 of 9 single-agent first drafts scored 46/60 on alignment (for example 13 instead of 14). Both were fixed after the agent's own test failed.</span></li>
+    <li><b>The critic raised only false alarms.</b><span>One check called a point set a "cyclic axis permutation" with expected RMSD 0, but the points were not a rotation of each other: Biopython gives 1.16458704, exactly the code's answer. Both fix calls the critic triggered went to code that was already correct.</span></li>
+    <li><b>Self-tests can be wrong too.</b><span>In 3 of 5 single-agent fixes, the agent's own test expected the wrong value for code that was already correct.</span></li>
+    <li><b>Slow drafts, rescued by selection.</b><span>3 team drafts for alignment timed out on the hidden tests; picking among 3 siblings chose a correct, fast one.</span></li>
+  </ol>
+</section>
+
+<section>
+  <p class="big">On well-known methods, one agent with a test loop was enough.<br><span class="g">Coordination only added cost.</span></p>
+  <p class="sub" style="text-align:center;margin:16px auto 0">Small test: one model, textbook algorithms it has likely seen, n = 3 per cell. Next: harder, less familiar methods where first drafts fail more often.</p>
+</section>
+
+<section id="run">
+  <h2>Run it</h2>
+  <p class="sub">Needs <code>uv</code> and Claude Code logged in. Runs resume from the SQLite ledger.</p>
+<pre>uv sync
+uv run pytest -q                        # 8 tests: references + harness + ledger
+uv run python -m swarm.run --reps 3     # 27 runs, 6 agent calls at once
+uv run python scripts/report.py         # ledger → results/summary.json + RESULTS.md</pre>
+</section>
+</main>
+<footer><div class="wrap">agent-swarm-bio-bench · Dheepak Karan Elumalai Santhakumari · <a href="https://github.com/dheepakkaran/agent-swarm-bio-bench">GitHub</a> · Inter by Rasmus Andersson (OFL)</div></footer>
+</body>
+</html>

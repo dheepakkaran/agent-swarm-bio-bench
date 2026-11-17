@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>agent-swarm-bio-bench keynote</title>
+<!--
+  Keynote film source. renderAt(t) draws the frame at time t (seconds) and is fully deterministic,
+  so film/make_film.py can screenshot every frame at 1920x1080 / 30 fps. Open the file in a browser
+  without "?manual=1" to watch it play in real time (silent).
+  Numbers come from data.js, which make_film.py writes from results/summary.json. The other figures
+  (46/60, 13 instead of 14, the critic's check) are from FAILURES.md and the run traces.
+-->
+<script src="data.js"></script>
+<style>
+@font-face{font-family:"Inter";src:url("fonts/InterVariable.woff2") format("woff2");font-weight:100 900;font-display:block}
+:root{--a1:#6f9bff;--a2:#b69cff;--grey:#86868b;--dim:#48484c;--ink:#f5f5f7;--bad:#ff8a80}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#000;color:var(--ink);
+  font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+.mono{font-family:"DejaVu Sans Mono","Noto Sans Mono",ui-monospace,monospace}
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px;opacity:0;visibility:hidden}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.h{font-size:120px;font-weight:700;letter-spacing:-0.045em;line-height:1.06;text-align:center;margin:0}
+.h2{font-size:84px;font-weight:700;letter-spacing:-0.04em;line-height:1.08;margin:0;text-align:center}
+.h3{font-size:64px;font-weight:700;letter-spacing:-0.035em;line-height:1.1;margin:0}
+.g{background:linear-gradient(90deg,var(--a1) 10%,var(--a2) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s{font-size:36px;font-weight:500;color:var(--grey);letter-spacing:-0.012em;line-height:1.4;text-align:center}
+.k{font-size:26px;font-weight:600;color:var(--grey);letter-spacing:.14em;text-transform:uppercase}
+.abs{position:absolute}
+[data-in]{opacity:0}
+svg text{font-family:"Inter",system-ui,sans-serif}
+
+/* test wall */
+.tile{position:absolute;display:grid;grid-template-columns:repeat(10,11px);gap:3px}
+.tile i{display:block;width:11px;height:11px;border-radius:2px;background:#1c1c1f}
+.armlab{position:absolute;font-size:30px;font-weight:650;letter-spacing:-0.015em;text-align:center;width:439px}
+.armcnt{position:absolute;font-size:24px;color:var(--grey);text-align:center;width:439px;font-variant-numeric:tabular-nums}
+.tasklab{position:absolute;left:40px;width:170px;font-size:22px;color:var(--grey);text-align:right;line-height:1.2}
+
+/* bars */
+.track{position:absolute;height:64px;border-radius:14px;background:#141416}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:14px;background:#3a3a3e}
+.fill.acc{background:linear-gradient(90deg,var(--a1),var(--a2))}
+.blab{position:absolute;font-size:34px;font-weight:650;letter-spacing:-0.02em;text-align:right;width:420px}
+.bval{position:absolute;font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* big cells (alignment) */
+.cells60{position:absolute;left:300px;top:430px;display:grid;grid-template-columns:repeat(30,36px);gap:8px}
+.cells60 i{display:block;width:36px;height:36px;border-radius:7px;background:#1c1c1f}
+.chip{font-size:28px;font-weight:600;padding:12px 26px;border-radius:999px;background:#18181a;color:#6e6e73;white-space:nowrap}
+
+/* code card */
+.card{position:absolute;left:310px;top:300px;width:1300px;border-radius:22px;background:#0c0c0e;border:1.5px solid #2a2a2e;
+  padding:44px 56px;font-size:31px;line-height:1.7;color:#d2d2d7}
+.card .r{color:var(--bad)} .card .c{color:#6e6e73}
+.stamp{position:absolute;right:60px;bottom:44px;font-family:"Inter",sans-serif;font-size:34px;font-weight:800;letter-spacing:.12em;color:#000;
+  background:linear-gradient(90deg,var(--a1),var(--a2));padding:10px 26px;border-radius:12px;transform-origin:50% 50%}
+
+.hrow{position:absolute;left:330px;width:1260px;height:110px;display:flex;align-items:center;border-top:1px solid #1d1d20;font-size:40px;font-weight:600;letter-spacing:-0.02em}
+.hrow .n{width:120px;color:var(--grey);font-size:30px}
+.hrow .t{flex:1}
+.tag{font-size:24px;font-weight:700;padding:10px 22px;border-radius:999px;color:#d2d2d7;background:#2a2a2d;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- 1. title -->
+<div class="scene center" id="s1">
+  <div class="k" data-in="0.3">An experiment</div>
+  <h1 class="h" style="margin-top:34px" data-in="0.7">One agent, <span class="g">or a team?</span></h1>
+  <div class="s" style="margin-top:40px" data-in="1.7">AI agents writing scientific code, tested on three classic biology methods.</div>
+</div>
+
+<!-- 2. question -->
+<div class="scene center" id="s2">
+  <h2 class="h2" style="max-width:1500px" data-in="0.3">Does a <span class="g">team of AI agents</span> write more correct code than one agent alone?</h2>
+  <div class="s" style="margin-top:56px" data-in="2.2">Same model. Same budget: at most 6 model calls per run.</div>
+</div>
+
+<!-- 3. arm 1 -->
+<div class="scene" id="s3">
+  <div class="abs k" style="left:0;width:1920px;text-align:center;top:110px" data-in="0.2">Arm 1</div>
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:160px" data-in="0.4">One agent</div>
+  <svg class="abs" style="left:0;top:0" width="1920" height="1080" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="ga" x1="0" x2="1"><stop offset="0" stop-color="#6f9bff"/><stop offset="1" stop-color="#b69cff"/></linearGradient></defs>
+    <circle id="loop3" cx="960" cy="620" r="230" fill="none" stroke="#2a2a2e" stroke-width="3"/>
+    <circle id="loop3a" cx="960" cy="620" r="230" fill="none" stroke="url(#ga)" stroke-width="5" stroke-linecap="round"/>
+    <circle id="node3" cx="960" cy="620" r="96" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/>
+    <text x="960" y="633" text-anchor="middle" font-size="38" font-weight="700" fill="#f5f5f7">Agent</text>
+    <circle id="dot3" r="13" fill="#ffffff"/>
+    <g id="l3a"><text x="960" y="365" text-anchor="middle" font-size="31" font-weight="600" fill="#f5f5f7">writes code + its own test</text></g>
+    <g id="l3b"><text x="1320" y="840" text-anchor="middle" font-size="31" font-weight="600" fill="#f5f5f7">harness runs both</text></g>
+    <g id="l3c"><text x="600" y="840" text-anchor="middle" font-size="31" font-weight="600" fill="#f5f5f7">fixes what failed</text></g>
+  </svg>
+  <div class="abs s" style="left:0;width:1920px;top:950px" data-in="2.6">It repeats until its checks pass, up to 5 fixes.</div>
+</div>
+
+<!-- 4. arms 2 + 3 -->
+<div class="scene" id="s4">
+  <div class="abs k" id="s4k2" style="left:0;width:1920px;text-align:center;top:110px">Arm 2</div>
+  <div class="abs h3" id="s4h2" style="left:0;width:1920px;text-align:center;top:160px">A team of agents</div>
+  <div class="abs k" id="s4k3" style="left:0;width:1920px;text-align:center;top:110px;opacity:0">Arm 3</div>
+  <div class="abs h3" id="s4h3" style="left:0;width:1920px;text-align:center;top:160px;opacity:0">The same team, <span class="g">without the critic</span></div>
+  <svg class="abs" id="g4" style="left:0;top:0" width="1920" height="1080" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="gb" x1="0" x2="1"><stop offset="0" stop-color="#6f9bff"/><stop offset="1" stop-color="#b69cff"/></linearGradient></defs>
+    <g id="e4" fill="none" stroke="#3a3a3e" stroke-width="3">
+      <path class="pe" d="M430 580 C 545 580, 545 400, 660 400"/>
+      <path class="pe" d="M430 580 C 545 580, 545 580, 660 580"/>
+      <path class="pe" d="M430 580 C 545 580, 545 760, 660 760"/>
+      <path class="ce" d="M920 400 C 1035 400, 1035 580, 1150 580"/>
+      <path class="ce" d="M920 580 C 1035 580, 1035 580, 1150 580"/>
+      <path class="ce" d="M920 760 C 1035 760, 1035 580, 1150 580"/>
+      <path class="re" d="M1410 580 L 1580 580"/>
+      <path class="be" d="M920 400 C 1200 400, 1380 560, 1580 572"/>
+      <path class="be" d="M920 580 C 1150 680, 1380 600, 1580 580"/>
+      <path class="be" d="M920 760 C 1200 760, 1380 600, 1580 588"/>
+    </g>
+    <g id="n4">
+      <g class="nd" data-k="p"><rect x="170" y="532" width="260" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="300" y="592" text-anchor="middle" font-size="34" font-weight="700" fill="#f5f5f7">Planner</text></g>
+      <g class="nd" data-k="i"><rect x="660" y="352" width="260" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="790" y="412" text-anchor="middle" font-size="31" font-weight="700" fill="#f5f5f7">Implementer 1</text></g>
+      <g class="nd" data-k="i"><rect x="660" y="532" width="260" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="790" y="592" text-anchor="middle" font-size="31" font-weight="700" fill="#f5f5f7">Implementer 2</text></g>
+      <g class="nd" data-k="i"><rect x="660" y="712" width="260" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="790" y="772" text-anchor="middle" font-size="31" font-weight="700" fill="#f5f5f7">Implementer 3</text></g>
+      <g class="nd" data-k="c" id="crit4"><rect x="1150" y="532" width="260" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="1280" y="592" text-anchor="middle" font-size="34" font-weight="700" fill="#f5f5f7">Critic</text></g>
+      <g class="nd" data-k="r"><rect x="1580" y="532" width="220" height="96" rx="22" fill="#0d0d10" stroke="#3a3a3e" stroke-width="3"/><text x="1690" y="592" text-anchor="middle" font-size="34" font-weight="700" fill="#f5f5f7">Fix</text></g>
+    </g>
+    <g font-size="25" fill="#86868b" text-anchor="middle">
+      <text class="cap" x="300" y="680">splits the work</text><text class="cap" x="300" y="712">into 3 approaches</text>
+      <text class="cap" x="790" y="860">all three write</text><text class="cap" x="790" y="892">at the same time</text>
+      <text class="cap cc" x="1280" y="680">writes its own</text><text class="cap cc" x="1280" y="712">checker</text>
+      <text class="cap" x="1690" y="680">fixes the</text><text class="cap" x="1690" y="712">best answer</text>
+      <text id="nc4" x="1280" y="860" opacity="0">each implementer</text><text id="nc4b" x="1280" y="892" opacity="0">tests its own code</text>
+    </g>
+    <g id="dots4"></g>
+  </svg>
+  <div class="abs s" style="left:0;width:1920px;top:960px" data-in="1.2">Agents only write. A harness runs every line of code.</div>
+</div>
+
+<!-- 5. tasks -->
+<div class="scene" id="s5">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:150px" data-in="0.2">Three classic methods</div>
+  <div class="abs s" style="left:0;width:1920px;top:250px" data-in="0.6">Each written from the original paper's math.</div>
+  <div class="abs" style="left:170px;top:390px;width:500px" data-in="1.2">
+    <div style="font-size:24px;color:var(--grey);letter-spacing:.1em">01</div>
+    <div style="font-size:46px;font-weight:700;letter-spacing:-0.03em;margin-top:14px;line-height:1.12">Line up two<br>DNA sequences</div>
+    <div style="font-size:26px;color:var(--grey);margin-top:22px;line-height:1.45">Smith &amp; Waterman 1981,<br>Gotoh 1982</div>
+  </div>
+  <div class="abs" style="left:710px;top:390px;width:500px" data-in="1.8">
+    <div style="font-size:24px;color:var(--grey);letter-spacing:.1em">02</div>
+    <div style="font-size:46px;font-weight:700;letter-spacing:-0.03em;margin-top:14px;line-height:1.12">Overlay two<br>3-D shapes</div>
+    <div style="font-size:26px;color:var(--grey);margin-top:22px;line-height:1.45">Kabsch 1976</div>
+  </div>
+  <div class="abs" style="left:1250px;top:390px;width:500px" data-in="2.4">
+    <div style="font-size:24px;color:var(--grey);letter-spacing:.1em">03</div>
+    <div style="font-size:46px;font-weight:700;letter-spacing:-0.03em;margin-top:14px;line-height:1.12">Fold an<br>RNA strand</div>
+    <div style="font-size:26px;color:var(--grey);margin-top:22px;line-height:1.45">Nussinov et al. 1978</div>
+  </div>
+  <div class="abs s" style="left:0;width:1920px;top:840px" data-in="3.6">Scored on <span style="color:var(--ink)">hidden tests</span> against Biopython. No agent ever saw them.</div>
+</div>
+
+<!-- 6. hidden test wall -->
+<div class="scene" id="s6">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:90px" data-in="0.2">Hidden tests the agents never saw</div>
+  <div class="abs s" style="left:0;width:1920px;top:178px;font-size:28px" data-in="0.6">One square = one test. 60, 40 and 50 tests per task, 3 runs each.</div>
+  <div id="wall"></div>
+  <div class="abs" id="s6end" style="left:0;width:1920px;top:770px;text-align:center;opacity:0">
+    <div style="font-size:64px;font-weight:700;letter-spacing:-0.035em"><span class="g" id="n27">27 / 27</span> runs fully correct</div>
+    <div class="s" style="margin-top:18px">Every arm, every run. A tie at the ceiling.</div>
+  </div>
+</div>
+
+<!-- 7. token race -->
+<div class="scene" id="s7">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:140px" data-in="0.2">What it cost</div>
+  <div class="abs s" style="left:0;width:1920px;top:235px" data-in="0.5">Tokens used per run, on average.</div>
+  <div id="race"></div>
+  <div class="abs" id="s7end" style="left:0;width:1920px;top:810px;text-align:center;opacity:0">
+    <div style="font-size:66px;font-weight:700;letter-spacing:-0.035em">The team used <span class="g" id="xtok"></span> the tokens</div>
+    <div class="s" style="margin-top:18px" id="xtime"></div>
+  </div>
+</div>
+
+<!-- 8. alignment failure -->
+<div class="scene" id="s8">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:120px" data-in="0.2">Where code went wrong</div>
+  <div class="abs s" style="left:0;width:1920px;top:215px" data-in="0.6">Only DNA alignment with gaps. 2 of 9 first drafts from the single agent<br>got some scores wrong, for example 13 instead of 14.</div>
+  <div class="cells60" id="c60"></div>
+  <div class="abs" id="c60lab" style="left:0;width:1920px;text-align:center;top:540px;font-size:44px;font-weight:700;font-variant-numeric:tabular-nums"></div>
+  <div class="abs" style="left:0;width:1920px;top:650px;display:flex;justify-content:center;gap:26px;align-items:center">
+    <span class="chip" id="ch1">first draft</span><span style="color:#48484c;font-size:30px">→</span>
+    <span class="chip" id="ch2">its own test failed</span><span style="color:#48484c;font-size:30px">→</span>
+    <span class="chip" id="ch3">one fix</span>
+  </div>
+  <div class="abs s" style="left:0;width:1920px;top:820px;font-size:31px" data-in="5.0">3 team drafts were too slow and timed out. The team simply picked a working one.</div>
+</div>
+
+<!-- 9. critic false alarm -->
+<div class="scene" id="s9">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:120px" data-in="0.2">The critic's alarm</div>
+  <div class="card mono" id="card9">
+    <div class="r">critic check failed: cyclic axis permutation</div>
+    <div>P = [[0,0,0], [1,0,0], [0,2,0], [0,0,3]]</div>
+    <div>Q = [[0,0,0], [0,0,1], [2,0,0], [3,0,0]]</div>
+    <div>returned 1.16458704, <span class="r">expected 0</span></div>
+    <div class="stamp" id="stamp">FALSE ALARM</div>
+  </div>
+  <div class="abs s" id="s9a" style="left:0;width:1920px;top:640px;opacity:0">The critic said Q is P, just turned. It is not. <span style="color:var(--ink)">The code was right.</span></div>
+  <div class="abs" id="s9b" style="left:0;width:1920px;top:790px;text-align:center;opacity:0">
+    <div style="font-size:46px;font-weight:700;letter-spacing:-0.03em">Fixes the critic asked for: <span class="g" id="fa1"></span> false alarms</div>
+    <div class="s" style="margin-top:16px;font-size:32px" id="fa2"></div>
+  </div>
+</div>
+
+<!-- 10. pre-registration -->
+<div class="scene" id="s10">
+  <div class="abs h3" style="left:0;width:1920px;text-align:center;top:180px" data-in="0.2">Written down before the first run</div>
+  <div class="abs s mono" style="left:0;width:1920px;top:290px;font-size:28px" data-in="0.7">commit 0455005 · question · arms · metrics · hypotheses</div>
+  <div class="hrow" style="top:430px" data-in="1.4"><span class="n">H1</span><span class="t">The team beats one agent</span><span class="tag">not supported</span></div>
+  <div class="hrow" style="top:540px;border-bottom:1px solid #1d1d20" data-in="2.0"><span class="n">H2</span><span class="t">The critic is what helps</span><span class="tag">not supported</span></div>
+  <div class="abs s" style="left:0;width:1920px;top:760px" data-in="3.0">Not disproved either: every arm hit the ceiling.</div>
+</div>
+
+<!-- 11. takeaway -->
+<div class="scene center" id="s11">
+  <h2 class="h2" style="max-width:1560px" data-in="0.3">On well-known methods, one agent with a test loop was enough.</h2>
+  <h2 class="h2 g" style="margin-top:40px" data-in="2.2">Coordination only added cost.</h2>
+</div>
+
+<!-- 12. honesty + end -->
+<div class="scene center" id="s12">
+  <div class="s" style="max-width:1400px;color:#a1a1a6" data-in="0.3">Small test: 3 tasks × 3 runs per arm, one AI model, textbook methods.<br>Next: harder, less familiar methods, where first drafts fail more often.</div>
+  <div style="height:120px"></div>
+  <div style="font-size:72px;font-weight:700;letter-spacing:-0.04em" data-in="2.4">agent-swarm-bio-bench</div>
+  <div class="s mono" style="margin-top:22px;font-size:28px" data-in="2.9">github.com/dheepakkaran/agent-swarm-bio-bench</div>
+</div>
+
+<script>
+const SC = [ // id, start, end (seconds)
+  ["s1", 0, 5], ["s2", 5, 11.5], ["s3", 11.5, 17], ["s4", 17, 27.5], ["s5", 27.5, 35.5], ["s6", 35.5, 45.5],
+  ["s7", 45.5, 54.5], ["s8", 54.5, 63.5], ["s9", 63.5, 72], ["s10", 72, 77.5], ["s11", 77.5, 84], ["s12", 84, 90.5]];
+const DURATION = 90.5;
+const HITS = SC.slice(1).map(([id, s]) => [s, ["s6", "s7", "s11"].includes(id) ? 0.55 : 0.32]);
+const PULSE = [35.5, 77.5];
+const A = DATA.arms;
+
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const eo = x => 1 - Math.pow(1 - cl(x), 3);
+const eio = x => { x = cl(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const ramp = (lt, a, d) => eo((lt - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString("en-US");
+const ACC = "linear-gradient(135deg,#6f9bff,#b69cff)";
+
+// ---- build repeated parts once
+const ARMS = [["single", "One agent"], ["swarm", "Team + critic"], ["swarm_nocritic", "Team, no critic"]];
+const TASKS = [["alignment", 6, "Align DNA"], ["kabsch", 4, "Overlay 3-D"], ["nussinov", 5, "Fold RNA"]];
+{ // test wall: arm columns, task rows, rep tiles; one cell per hidden test
+  const w = $("wall"), X0 = [250, 810, 1370], rowY = [330, 450, 540];
+  TASKS.forEach(([t, rows, lab], ti) => {
+    const l = document.createElement("div"); l.className = "tasklab"; l.textContent = lab; l.style.top = (rowY[ti] + rows * 7 - 14) + "px"; w.appendChild(l);
+  });
+  ARMS.forEach(([a, name], ai) => {
+    const lab = document.createElement("div"); lab.className = "armlab"; lab.textContent = name;
+    lab.style.left = X0[ai] + "px"; lab.style.top = "250px"; w.appendChild(lab);
+    const cnt = document.createElement("div"); cnt.className = "armcnt"; cnt.id = "cnt_" + a;
+    cnt.style.left = X0[ai] + "px"; cnt.style.top = "640px"; w.appendChild(cnt);
+    TASKS.forEach(([t, rows], ti) => {
+      DATA.cells[t + "/" + a].forEach((cell, rep) => {
+        const [pass, total] = cell.split("/").map(Number);
+        const tile = document.createElement("div"); tile.className = "tile";
+        tile.dataset.k = ti * 3 + rep; tile.dataset.pass = pass;
+        tile.style.left = (X0[ai] + rep * 151) + "px"; tile.style.top = rowY[ti] + "px";
+        for (let i = 0; i < total; i++) tile.appendChild(document.createElement("i"));
+        w.appendChild(tile);
+      });
+    });
+  });
+}
+{ // token race
+  const r = $("race"), order = [["single", "One agent"], ["swarm_nocritic", "Team, no critic"], ["swarm", "Team + critic"]];
+  order.forEach(([a, name], i) => {
+    const y = 360 + i * 130;
+    r.insertAdjacentHTML("beforeend",
+      `<div class="blab" style="left:120px;top:${y + 6}px">${name}</div>` +
+      `<div class="track" style="left:580px;top:${y}px;width:1100px"><div class="fill${a === "swarm" ? " acc" : ""}" id="f_${a}"></div></div>` +
+      `<div class="bval" id="v_${a}" style="top:${y + 12}px"></div>`);
+  });
+  const sw = A.swarm, si = A.single;
+  $("xtok").textContent = (sw.mean_tokens / si.mean_tokens).toFixed(1) + "×";
+  $("xtime").textContent = `and ${(sw.median_wall_s / si.median_wall_s).toFixed(1)}× the time: ${Math.round(sw.median_wall_s)} s vs ${Math.round(si.median_wall_s)} s per run (median). Same final answers.`;
+}
+{ const c = $("c60"); for (let i = 0; i < 60; i++) c.appendChild(document.createElement("i")); }
+$("fa1").textContent = `${A.swarm.refine_when_already_correct} of ${A.swarm.runs_with_refine}`;
+$("fa2").textContent = `The single agent's own tests: ${A.single.refine_when_already_correct} of ${A.single.runs_with_refine} fixes were false alarms too.`;
+$("n27").textContent = `${Object.values(A).reduce((s, x) => s + x.all_pass_runs, 0)} / ${Object.values(A).reduce((s, x) => s + x.runs, 0)}`;
+
+// dots for scene 4
+const E4 = [...document.querySelectorAll("#e4 path")];
+const LEN = E4.map(p => p.getTotalLength());
+E4.forEach((p, i) => { p.style.strokeDasharray = LEN[i]; });
+const D4 = E4.map(() => { const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("r", 10); c.setAttribute("fill", "#fff"); $("dots4").appendChild(c); return c; });
+
+function sceneVis(lt, dur) { return eo(lt / 0.7) * (1 - eio((lt - (dur - 0.6)) / 0.6)); }
+function glowNode(g, a) {
+  const r = g.querySelector("rect");
+  r.setAttribute("stroke", a > 0.02 ? "url(#gb)" : "#3a3a3e");
+  r.setAttribute("stroke-width", 3 + 2 * a);
+  r.style.filter = a > 0.02 ? `drop-shadow(0 0 ${22 * a}px rgba(130,140,255,${0.7 * a}))` : "none";
+}
+
+const F = {
+  s1(lt, el) { el.style.transform = `scale(${lerp(1.05, 1, eo(lt / 5))})`; },
+  s2() {},
+  s3(lt) {
+    const L = 2 * Math.PI * 230, draw = eio((lt - 0.9) / 1.4);
+    const a = $("loop3a"); a.style.strokeDasharray = `${L * draw} ${L}`; a.setAttribute("transform", "rotate(-90 960 620)");
+    $("node3").setAttribute("stroke", lt > 0.8 ? "url(#ga)" : "#3a3a3e");
+    $("node3").style.filter = `drop-shadow(0 0 ${26 * ramp(lt, 0.8, 1)}px rgba(130,140,255,.6))`;
+    const ang = -Math.PI / 2 + Math.max(0, lt - 2.2) * 1.55;
+    const d = $("dot3"); d.setAttribute("cx", 960 + 230 * Math.cos(ang)); d.setAttribute("cy", 620 + 230 * Math.sin(ang));
+    d.style.opacity = ramp(lt, 2.2, 0.4);
+    [["l3a", 1.1], ["l3b", 1.6], ["l3c", 2.1]].forEach(([id, s]) => $(id).style.opacity = ramp(lt, s, 0.6));
+  },
+  s4(lt) {
+    const sw = ramp(lt, 6.4, 0.8);   // switch to arm 3
+    $("s4k2").style.opacity = ramp(lt, 0.2, 0.8) * (1 - sw); $("s4h2").style.opacity = ramp(lt, 0.4, 0.8) * (1 - sw);
+    $("s4k3").style.opacity = sw; $("s4h3").style.opacity = sw;
+    const nodes = [...document.querySelectorAll("#n4 .nd")];
+    nodes.forEach((n, i) => {
+      const k = n.dataset.k, start = { p: 0.6, i: 1.0 + (i - 1) * 0.15, c: 1.6, r: 2.0 }[k];
+      let o = ramp(lt, start, 0.6);
+      if (k === "c") o *= 1 - 0.85 * ramp(lt, 6.8, 0.8);
+      n.style.opacity = o;
+      let g = 0;
+      if (k === "p") g = ramp(lt, 2.4, 0.3) * (1 - ramp(lt, 3.2, 0.5));
+      if (k === "i") g = ramp(lt, 3.6, 0.3) * (1 - ramp(lt, 4.6, 0.5)) + ramp(lt, 8.0, 0.3) * (1 - ramp(lt, 8.9, 0.5));
+      if (k === "c") g = ramp(lt, 5.0, 0.3) * (1 - ramp(lt, 5.8, 0.5));
+      if (k === "r") g = ramp(lt, 5.8, 0.3) * (1 - ramp(lt, 6.6, 0.5)) + ramp(lt, 9.4, 0.3) * (1 - ramp(lt, 10.2, 0.4));
+      glowNode(n, cl(g));
+    });
+    document.querySelectorAll("#g4 .cap").forEach(c => {
+      let o = ramp(lt, 1.8, 0.6); if (c.classList.contains("cc")) o *= 1 - ramp(lt, 6.8, 0.6);
+      c.style.opacity = o;
+    });
+    $("nc4").style.opacity = $("nc4b").style.opacity = ramp(lt, 7.2, 0.6);
+    // edges: draw in, critic edges fade in arm 3, bypass edges draw in arm 3
+    E4.forEach((p, i) => {
+      const cls = p.getAttribute("class");
+      const s = { pe: 1.4, ce: 1.9, re: 2.3, be: 7.2 }[cls];
+      let d = eio((lt - s) / 0.7), o = 1;
+      if (cls === "ce" || cls === "re") o = 1 - 0.8 * ramp(lt, 6.8, 0.6);
+      if (cls === "be") o = d;
+      p.style.strokeDashoffset = LEN[i] * (1 - d); p.style.opacity = o;
+      // dots: travel windows
+      const win = { pe: [2.6, 3.6], ce: [4.4, 5.1], re: [5.2, 5.8], be: [8.4, 9.4] }[cls];
+      const q = (lt - win[0]) / (win[1] - win[0]);
+      const dot = D4[i];
+      if (q > 0 && q < 1) {
+        const pt = p.getPointAtLength(LEN[i] * eio(q));
+        dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+        dot.style.opacity = Math.min(1, q * 6, (1 - q) * 6);
+      } else dot.style.opacity = 0;
+    });
+  },
+  s5() {},
+  s6(lt) {
+    const done = {};
+    document.querySelectorAll("#wall .tile").forEach(tile => {
+      const k = +tile.dataset.k, pass = +tile.dataset.pass, start = 1.2 + k * 0.5, cells = tile.children;
+      const n = cells.length;
+      let lit = 0;
+      for (let i = 0; i < n; i++) {
+        const on = lt > start + i * (0.55 / n);
+        if (on && i < pass) lit++;
+        cells[i].style.background = on ? (i < pass ? "#e8e8ee" : "#ff8a80") : "#1c1c1f";
+      }
+      const full = lit === n;
+      if (full) tile.style.filter = `drop-shadow(0 0 ${8 * (1 - ramp(lt, start + 0.6, 0.8))}px rgba(160,160,255,.9))`;
+      const ai = +tile.style.left.replace("px", "") < 790 ? 0 : +tile.style.left.replace("px", "") < 1350 ? 1 : 2;
+      done[ai] = (done[ai] || 0) + (full ? 1 : 0);
+    });
+    ARMS.forEach(([a], ai) => { $("cnt_" + a).textContent = `${done[ai] || 0} / ${A[a].runs} runs fully correct`; });
+    const e = ramp(lt, 6.6, 0.9);
+    $("s6end").style.opacity = e; $("s6end").style.transform = `translateY(${(1 - e) * 26}px)`;
+  },
+  s7(lt) {
+    const max = A.swarm.mean_tokens, W = 1100;
+    ["single", "swarm_nocritic", "swarm"].forEach(a => {
+      // one shared clock: every bar grows at the same speed, so the bigger ones keep growing
+      const v = Math.min(A[a].mean_tokens, lt > 1.2 ? max * eio((lt - 1.2) / 3.0) : 0);
+      const w = v / max * W;
+      $("f_" + a).style.width = w + "px";
+      const lab = $("v_" + a); lab.style.left = (580 + w + 24) + "px"; lab.textContent = fmt(v);
+      lab.style.opacity = ramp(lt, 1.2, 0.4);
+      lab.style.color = a === "swarm" ? "#c9c2ff" : "#d2d2d7";
+    });
+    const e = ramp(lt, 4.9, 0.9);
+    $("s7end").style.opacity = e; $("s7end").style.transform = `translateY(${(1 - e) * 26}px)`;
+  },
+  s8(lt) {
+    const cells = $("c60").children;
+    for (let i = 0; i < 60; i++) {
+      const on = lt > 1.4 + i * 0.022;
+      const fixedOn = lt > 3.6 + (i - 46) * 0.05;
+      let bg = "#1c1c1f";
+      if (on) bg = i < 46 ? "#e8e8ee" : (fixedOn && i >= 46 ? ACC : "#ff8a80");
+      cells[i].style.background = bg;
+    }
+    const passed = lt < 1.4 ? 0 : Math.min(46, Math.floor((lt - 1.4) / 0.022) + 1) + (lt > 3.6 ? cl(Math.floor((lt - 3.6) / 0.05) + 1, 0, 14) : 0);
+    $("c60lab").textContent = lt < 1.4 ? "" : `${passed} / 60 hidden tests`;
+    $("c60lab").style.color = passed === 60 ? "#c9c2ff" : "#f5f5f7";
+    $("c60").style.top = "430px";
+    $("c60lab").style.top = "335px";
+    const st = lt < 2.4 ? 0 : lt < 3.2 ? 1 : 2;
+    ["ch1", "ch2", "ch3"].forEach((id, i) => {
+      const c = $(id), on = lt > 1.2 && i === st;
+      c.style.opacity = ramp(lt, 1.0 + i * 0.25, 0.5);
+      c.style.background = on ? (i === 2 ? ACC : i === 1 ? "#3a1a17" : "#3a3a3e") : "#18181a";
+      c.style.color = on ? (i === 2 ? "#000" : i === 1 ? "#ff8a80" : "#f5f5f7") : "#6e6e73";
+    });
+  },
+  s9(lt) {
+    const c = $("card9"), up = eo((lt - 0.6) / 1.0);
+    c.style.opacity = up; c.style.transform = `translateY(${(1 - up) * 60}px)`;
+    const s = ramp(lt, 3.0, 0.35);
+    $("stamp").style.opacity = s; $("stamp").style.transform = `rotate(-6deg) scale(${lerp(1.6, 1, s)})`;
+    const a = ramp(lt, 3.4, 0.8); $("s9a").style.opacity = a; $("s9a").style.transform = `translateY(${(1 - a) * 20}px)`;
+    const b = ramp(lt, 5.2, 0.8); $("s9b").style.opacity = b; $("s9b").style.transform = `translateY(${(1 - b) * 20}px)`;
+  },
+  s10(lt) {
+    document.querySelectorAll("#s10 .tag").forEach((t, i) => {
+      const p = ramp(lt, 1.9 + i * 0.6, 0.4);
+      t.style.background = p > 0.5 ? "#3a3a3e" : "#1a1a1c"; t.style.color = p > 0.5 ? "#f5f5f7" : "#6e6e73";
+    });
+  },
+  s11() {}, s12() {}
+};
+
+function renderAt(t) {
+  for (const [id, a, b] of SC) {
+    const el = $(id), lt = t - a, dur = b - a;
+    const vis = (lt < 0 || lt > dur) ? 0 : sceneVis(lt, dur);
+    if (vis <= 0) { el.style.visibility = "hidden"; el.style.opacity = 0; continue; }
+    el.style.visibility = "visible"; el.style.opacity = vis;
+    el.querySelectorAll("[data-in]").forEach(e => {
+      const p = ramp(lt, +e.dataset.in, 0.9);
+      e.style.opacity = p.toFixed(3);
+      e.style.transform = `translateY(${((1 - p) * 28).toFixed(2)}px)`;
+      e.style.filter = p < 1 ? `blur(${((1 - p) * 6).toFixed(2)}px)` : "none";
+    });
+    F[id](lt, el);
+  }
+}
+
+if (!location.search.includes("manual")) {
+  const t0 = performance.now();
+  (function loop() { renderAt(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })();
+} else renderAt(0);
+</script>
+</body>
+</html>
